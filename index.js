@@ -14,7 +14,7 @@ let firstTerm = '', secondTerm = '', realTimeTerm = '';
 let firstOperator = '', secondOperator = '', realTimeOperator = '';
 let productResult = 1, divideResult = 1, storeResult = 0;
 let lastTerm = '';
-let clickedOperator = false, reverseOperator = '', secondRankOperator = '';
+let clickedOperator = false, reverseOperator = '';
 let result = 0;
 let counter = 0;
 textarea.textContent === '';
@@ -47,8 +47,6 @@ for (let i = 0; i < digitsBtns.length; i++) {
         textarea.textContent = realTimeTerm;
     })
 }
-
-
 for (let i = 0; i < operatorsBtns.length; i++) {
 
     if (operatorsBtns[i].textContent === 'C') {
@@ -78,36 +76,29 @@ for (let i = 0; i < operatorsBtns.length; i++) {
                     storeResult = result;
                     productResult = secondTerm;
                     result = storeResult;
-                    secondRankOperator = firstOperator;
-                    console.log('second operation has more priority than first operation');
                 }
             }
-            else {
-                operation(secondTerm, firstOperator);
-            }
+            operation(secondTerm, firstOperator);
         }
         else {
 
+            if (firstRankOperators.includes(secondOperator)) {
+                if (secondRankOperators.includes(firstOperator)) {
+                    //         firstRankResult = operation(secondTerm, realTimeTerm, secondOperator);
+                    //         secondOperator = realTimeOperator;
+                    //     }
+                    // }
+                    // if(firstRankOperators.includes(firstOperator) && firstRankOperators.includes(secondOperator)) {
+                    //     result = operation(firstTerm, secondTerm, firstOperator);
+                    //     result = operation(result, realTimeTerm, secondOperator);
+                    // 
+                }
+            }
             firstTerm = secondTerm;
             firstOperator = secondOperator;
             secondTerm = realTimeTerm;
             secondOperator = realTimeOperator;
-
-            if (firstRankOperators.includes(secondOperator)) {
-                if(firstRankOperators.includes(firstOperator)) {
-                    storeResult = result;
-                    operation(secondTerm, secondOperator);
-                    result = storeResult;
-                }
-                else if (secondRankOperators.includes(firstOperator)) {
-                        storeResult = productResult;
-                        operation(productResult, secondRankOperator);
-                        productResult = 0;
-                    }
-            }
-            else {
-                operation(secondTerm, firstOperator);
-            }
+            operation(secondTerm, firstOperator);
         }
         realTimeTerm = '';
         // console.log('firstTerm = ', firstTerm , 'secondTerm = ', secondTerm);
