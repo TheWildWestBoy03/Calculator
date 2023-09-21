@@ -1,0 +1,187 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+:root {
+    --black: #000802;
+    --green: rgb(5, 118, 5);
+    --lime-green: rgb(6, 179, 6);
+    --red: rgb(214, 36, 36);
+    --white: rgb(249, 249, 249);
+    --dark-gray: rgb(20, 20, 20);
+    --light-gray: rgb(66, 66, 66);
+    --font-size: 16px;
+    --textarea-font-size: 14px;
+    --small: 14px;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to bottom right, yellow, red, orange, rgb(245, 165, 10), yellow 80%) center;
+    background-size: 400% 400%;
+    animation-name: gradient;
+    animation-iteration-count: infinite;
+    animation-duration: 1000s;
+}   
+
+@keyframes gradient {
+	0% {
+		background-position: 20% 20%;
+	}
+	50% {
+		background-position: 50% 50%;
+	}
+	75% {
+		background-position: 100% 100%;
+	}
+    90% {
+        background-position: 50% 50%;
+    }
+
+    100% {
+        background-position: 20% 20%;
+    }
+}
+
+.container {
+    height: 90%;
+    padding: 10px;
+    border: 5px solid var(--lime-green);
+    border-radius: 25px;
+    transition: all .5s linear;
+    background:linear-gradient(to bottom right, #000802, #203, rgb(6, 6, 90));
+}
+
+.container textarea {
+    width: 100%;
+    display: block;
+    margin: auto;
+    color:var(--lime-green);
+    font-size: 40px;
+    text-align: right;
+    border-top-right-radius: 17px;
+    border-top-left-radius: 17px;
+    background: rgb(37, 37, 37);
+}
+
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.btn-container {
+    padding: 3px;
+    width: 95%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+}
+
+.btn {
+    background-color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    color: gray;
+    font-size: var(--small);
+    padding: 6px;
+    transition: all .1s linear;
+    border: none;
+    cursor: pointer;
+    border-radius: 25px;
+}
+
+.btn i {
+    color: gray;
+}
+
+.btn:hover {
+    background: var(--dark-gray);
+}
+
+.del-btn {
+    margin-left: auto;
+    color:var(--lime-green);
+}
+
+.digits-container {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+}
+
+.col {
+    display:  flex;
+    flex-direction: column;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 20%;
+    height: 100%;
+}
+
+.main-btn, .main-op-btn, .equal {
+    height: 55px;
+    width: 55px;
+    position: relative;
+    display: inline-block;
+    background-color: inherit;
+    padding: 3px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    color: var(--white);
+    font-size: 18px;
+    transition: all .1s linear;
+}
+
+.main-btn i,  .main-op-btn i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.main-op-btn {
+    color: var(--green);
+}
+
+.main-btn:hover, .main-op-btn:hover {
+    font-size: 14px;
+}
+
+.main-btn:hover, .main-op-btn:hover {
+    background-color: var(--light-gray);
+}
+
+.C {
+    color:var(--red);
+}
+
+.percent, .parantesis{
+    color: var(--green);
+}
+
+.equal {
+    background-color: var(--lime-green);
+    color: var(--white);
+    font-size: 30px;
+}
+
+
+  
