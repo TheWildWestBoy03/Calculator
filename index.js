@@ -12,9 +12,9 @@ const letterKeys = "abcdefghijklmnopqrstuvwxyz";
 
 let firstTerm = '', secondTerm = '', realTimeTerm = '';
 let firstOperator = '', secondOperator = '', realTimeOperator = '';
-let productResult = 1, divideResult = 1, storeResult = 0;
+let productResult = '', storeResult = 0;
 let lastTerm = '';
-let clickedOperator = false, reverseOperator = '';
+let clickedOperator = false, reverseOperator = '', secondRankOperator = '', pressedEqual = false;
 let result = 0;
 let counter = 0;
 textarea.textContent === '';
@@ -64,8 +64,14 @@ for (let i = 0; i < operatorsBtns.length; i++) {
         realTimeOperator = operatorsBtns[i].textContent;
 
         if (counter == 1) {
-            firstTerm = realTimeTerm;
+            if(pressedEqual === false)
+                firstTerm = realTimeTerm;
+            else {
+                firstTerm = result;
+            }
+            
             firstOperator = realTimeOperator;
+            console.log(`first term is ${firstTerm}`);
             result = parseFloat(firstTerm);
         }
         else if (counter == 2) {
@@ -73,32 +79,67 @@ for (let i = 0; i < operatorsBtns.length; i++) {
             secondOperator = realTimeOperator;
             if (firstRankOperators.includes(secondOperator)) {
                 if (secondRankOperators.includes(firstOperator)) {
-                    storeResult = result;
-                    productResult = secondTerm;
-                    result = storeResult;
+                    productResult = parseFloat(secondTerm);
+                    console.log(`Initial productResult is ${productResult} and last result is ${result}`);
+                    secondRankOperator = firstOperator;
+                    console.log('trebuie sa rezolvam operatiile de rank superior');
+                }
+                else {
+                    operation(secondTerm, firstOperator);
                 }
             }
-            operation(secondTerm, firstOperator);
+            else {
+                operation(secondTerm, firstOperator);
+            }
+            
         }
         else {
-
-            if (firstRankOperators.includes(secondOperator)) {
-                if (secondRankOperators.includes(firstOperator)) {
-                    //         firstRankResult = operation(secondTerm, realTimeTerm, secondOperator);
-                    //         secondOperator = realTimeOperator;
-                    //     }
-                    // }
-                    // if(firstRankOperators.includes(firstOperator) && firstRankOperators.includes(secondOperator)) {
-                    //     result = operation(firstTerm, secondTerm, firstOperator);
-                    //     result = operation(result, realTimeTerm, secondOperator);
-                    // 
-                }
-            }
             firstTerm = secondTerm;
             firstOperator = secondOperator;
             secondTerm = realTimeTerm;
             secondOperator = realTimeOperator;
-            operation(secondTerm, firstOperator);
+
+            if (firstRankOperators.includes(secondOperator)) {
+                if(firstRankOperators.includes(firstOperator)) {
+                    if(secondRankOperator !== '') {
+                        storeResult = result;
+                        operation(secondTerm, firstOperator);
+                        result = storeResult;
+                        console.log(`productResult is ${productResult} so far and result should not change ${result}`);
+                    }
+                    else {
+                        operation(secondTerm, firstOperator);
+                    }
+                }
+            }
+            if(firstRankOperators.includes(firstOperator)) {
+                if(secondRankOperators.includes(secondOperator)){
+                    storeResult = result;
+                    operation(secondTerm, firstOperator);
+                    result = storeResult;
+                    console.log(`result is ${result} and productResult is ${productResult}`);
+                    operation(productResult, secondRankOperator);
+                    productResult = 0;
+                    console.log(`final result is ${result}`);
+                    console.log('iesim din sir');
+                    secondRankOperator = '';
+                }
+            }
+            if (secondRankOperators.includes(firstOperator)) {
+                if(firstRankOperators.includes(secondOperator)) {
+                    productResult = 1;
+                    secondRankOperator = firstOperator;
+                    storeResult = result;
+                    operation(secondTerm, secondOperator);
+                    result = storeResult;
+                }
+            }
+            if(secondRankOperators.includes(firstOperator)) {
+                if(secondRankOperator.includes(secondOperator)){
+                    operation(secondTerm, firstOperator);
+                }
+            }
+            
         }
         realTimeTerm = '';
         // console.log('firstTerm = ', firstTerm , 'secondTerm = ', secondTerm);
@@ -122,17 +163,32 @@ delBtn.addEventListener('click', () => {
 resetBtn.addEventListener('click', reset);
 
 equalBtn.addEventListener('click', (e) => {
+    console.log(result);
+    pressedEqual = true;
     if (counter) {
-        operation(realTimeTerm, realTimeOperator);
+        console.log(firstRankOperators.includes(realTimeOperator));
+        if(firstRankOperators.includes(realTimeOperator) && productResult !== '') {
+            storeResult = result;
+            operation(realTimeTerm, realTimeOperator);
+            result = storeResult;
+            operation(productResult, secondRankOperator);
+            productResult = '';
+        }
+        else {
+            operation(realTimeTerm, realTimeOperator);
+        }
     }
+    secondRankOperator = '';
     textarea.textContent = result;
 
-    if (realTimeOperator === '+') reverseOperator = '-';
-    if (realTimeOperator === '-') reverseOperator = '+';
-    if (realTimeOperator === 'x') reverseOperator = '/';
-    if (realTimeOperator === '/') reverseOperator = 'x';
+    console.log(result);
+    // if (realTimeOperator === '+') reverseOperator = '-';
+    // if (realTimeOperator === '-') reverseOperator = '+';
+    // if (realTimeOperator === 'x') reverseOperator = '/';
+    // if (realTimeOperator === '/') reverseOperator = 'x';
+    // operation(realTimeTerm, reverseOperator);
 
-    operation(realTimeTerm, reverseOperator);
+    counter = 0;
 })
 
 
@@ -154,7 +210,7 @@ function operation(first, operator) {
         case '/':
 
             result /= parseFloat(first);
-            divideResult = divideResult / parseFloat(first);
+            productResult = productResult / parseFloat(first);
             break;
         default:
             break;
@@ -171,4 +227,6 @@ function reset() {
     firstOperator = '';
     secondOperator = '';
     counter = 0;
+    pressedEqual = false;
+    clickedOperator = false;
 }
