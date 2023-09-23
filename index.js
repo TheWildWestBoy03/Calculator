@@ -1,88 +1,118 @@
 const digitsBtns = document.querySelectorAll('.main-btn');
 const operatorsBtns = document.querySelectorAll('.main-op-btn');
 const textarea = document.getElementById('calculus-textarea');
-const delBtn = document.querySelector('.del-btn');
+const btns = document.querySelectorAll('.btn');
 const resetBtn = document.querySelector('.C');
 const equalBtn = document.querySelector('.equal');
+const delBtn = document.querySelector('.del-btn');
 const piece = document.querySelectorAll('.piece');
-
+const test = document.querySelector('.test');
+const body = document.body;
+const digitsContainer = document.querySelector('.digits-container');
 const firstRankOperators = ['x', '/'];
 const secondRankOperators = ['+', '-'];
-const letterKeys = "abcdefghijklmnopqrstuvwxyz";
+
+const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const operators = ['+', '-', 'x', '/', '%', '+/-'];
 
 let firstTerm = '', secondTerm = '', realTimeTerm = '';
 let firstOperator = '', secondOperator = '', realTimeOperator = '';
 let productResult = '', storeResult = 0;
-let lastTerm = '';
 let clickedOperator = false, reverseOperator = '', secondRankOperator = '', pressedEqual = false;
-let result = 0;
-let counter = 0;
+let result = 0, modified = 0;
+let counter = 0, bracketsCounter = 0;
 textarea.textContent === '';
 
-for (let j = 0; j < piece.length; j++) {
-    piece[j].addEventListener('click', verifyKeys);
+for (let i = 0; i < piece.length; i++) {
+    piece[i].addEventListener('click', start);
 }
 
-function verifyKeys() {
-    for (let i = 0; i < textarea.textContent.length; i++) {
-        if (letterKeys.includes(textarea.textContent[i])) {
-            alert('you inserted wrong keys');
-            textarea.textContent = '';
-            break;
-        }
+for(let i=0; i<btns.length; i++) {
+    btns[i].addEventListener('click', otherFunctionalities);
+}
+
+function otherFunctionalities(e) {
+    if(e.currentTarget.classList.contains('del-btn')) {
+        deleteCharacters();
+    }
+    if(e.currentTarget.children[0].classList.contains('ri-time-line')) {
+        digitsContainer.classList.toggle('digits-container-disappearing');
     }
 }
 
-//creating numbers 
-
-for (let i = 0; i < digitsBtns.length; i++) {
-    digitsBtns[i].addEventListener('click', (event) => {
-        clickedOperator = false;
-        if (textarea.textContent === "0") {
-            realTimeTerm = digitsBtns[i].textContent;
-        }
-        else {
-            realTimeTerm += digitsBtns[i].textContent;
-        }
-        textarea.textContent = realTimeTerm;
-    })
-}
-for (let i = 0; i < operatorsBtns.length; i++) {
-
-    if (operatorsBtns[i].textContent === 'C') {
-        continue;
+function start(e) {
+    if (digits.includes(e.currentTarget.textContent) || e.currentTarget.textContent === '.') {
+        createAndDisplayNums(e);
     }
-
-    operatorsBtns[i].addEventListener('click', () => {
-        counter++;
-        if (clickedOperator === true || realTimeTerm === '') {
-            alert('abusive clicking! push the C button in order to reset the calculator');
+    
+    if (operators.includes(e.currentTarget.textContent)) {
+        if(e.currentTarget.textContent === '%') {
+            let newNumber = '0.' + result;
+            newNumber = parseFloat(newNumber).toFixed(5);
+            textarea.value = newNumber;
+            result = newNumber;
         }
-        else {
-            clickedOperator = true;
+        if(e.currentTarget.textContent === '+/-') {
+            let newNumber = textarea.value;
+            newNumber = parseFloat(newNumber) * (-1);
+            console.log(newNumber);
+            result = newNumber;
+            textarea.value = result;
+            clickedOperator = false;
+            counter = 0;
         }
-        realTimeOperator = operatorsBtns[i].textContent;
+        else
+            calculator(e);
+    }
+    if (e.currentTarget.textContent === 'C') {
+        reset();
+    }
+    if (e.currentTarget.textContent === '=') {
+        equality();
+    }
+}
 
-        if (counter == 1) {
-            if(pressedEqual === false)
+function createAndDisplayNums(e) {
+    // verifyKeys();
+    clickedOperator = false;
+    if (textarea.textContent === "0") {
+        realTimeTerm = e.currentTarget.textContent;
+    }
+    else {
+        realTimeTerm += e.currentTarget.textContent;
+    }
+    textarea.value = realTimeTerm;
+}
+
+function calculator(e) {
+    counter++;
+    if (clickedOperator === true || realTimeTerm === '') {
+        alert('abusive clicking! push the C button in order to reset the calculator');
+    }
+    else {
+        clickedOperator = true;
+    }
+    realTimeOperator = e.currentTarget.textContent;
+    switch(counter) {
+        case 1 :
+            if (pressedEqual === false){
                 firstTerm = realTimeTerm;
+            }
             else {
                 firstTerm = result;
             }
-            
+            productResult = '';
             firstOperator = realTimeOperator;
-            console.log(`first term is ${firstTerm}`);
             result = parseFloat(firstTerm);
-        }
-        else if (counter == 2) {
+            break;
+        
+        case 2:
             secondTerm = realTimeTerm;
             secondOperator = realTimeOperator;
             if (firstRankOperators.includes(secondOperator)) {
                 if (secondRankOperators.includes(firstOperator)) {
                     productResult = parseFloat(secondTerm);
-                    console.log(`Initial productResult is ${productResult} and last result is ${result}`);
                     secondRankOperator = firstOperator;
-                    console.log('trebuie sa rezolvam operatiile de rank superior');
                 }
                 else {
                     operation(secondTerm, firstOperator);
@@ -91,42 +121,38 @@ for (let i = 0; i < operatorsBtns.length; i++) {
             else {
                 operation(secondTerm, firstOperator);
             }
-            
-        }
-        else {
+            break;
+
+        default:
             firstTerm = secondTerm;
             firstOperator = secondOperator;
             secondTerm = realTimeTerm;
             secondOperator = realTimeOperator;
 
             if (firstRankOperators.includes(secondOperator)) {
-                if(firstRankOperators.includes(firstOperator)) {
-                    if(secondRankOperator !== '') {
+                if (firstRankOperators.includes(firstOperator)) {
+                    if (secondRankOperator !== '') {
                         storeResult = result;
                         operation(secondTerm, firstOperator);
                         result = storeResult;
-                        console.log(`productResult is ${productResult} so far and result should not change ${result}`);
                     }
                     else {
                         operation(secondTerm, firstOperator);
                     }
                 }
             }
-            if(firstRankOperators.includes(firstOperator)) {
-                if(secondRankOperators.includes(secondOperator)){
+            if (firstRankOperators.includes(firstOperator)) {
+                if (secondRankOperators.includes(secondOperator)) {
                     storeResult = result;
                     operation(secondTerm, firstOperator);
                     result = storeResult;
-                    console.log(`result is ${result} and productResult is ${productResult}`);
                     operation(productResult, secondRankOperator);
                     productResult = 0;
-                    console.log(`final result is ${result}`);
-                    console.log('iesim din sir');
                     secondRankOperator = '';
                 }
             }
             if (secondRankOperators.includes(firstOperator)) {
-                if(firstRankOperators.includes(secondOperator)) {
+                if (firstRankOperators.includes(secondOperator)) {
                     productResult = 1;
                     secondRankOperator = firstOperator;
                     storeResult = result;
@@ -134,40 +160,38 @@ for (let i = 0; i < operatorsBtns.length; i++) {
                     result = storeResult;
                 }
             }
-            if(secondRankOperators.includes(firstOperator)) {
-                if(secondRankOperator.includes(secondOperator)){
+            if (secondRankOperators.includes(firstOperator)) {
+                if (secondRankOperators.includes(secondOperator)) {
                     operation(secondTerm, firstOperator);
                 }
             }
-            
-        }
-        realTimeTerm = '';
-        // console.log('firstTerm = ', firstTerm , 'secondTerm = ', secondTerm);
-        // console.log('firstOperator = ', firstOperator , 'secondOperator = ', secondOperator);
-        // console.log(`Real time result is ${result} and counter is ${counter}`);
-    })
+            break;
+    }
+    realTimeTerm = '';
 }
 
-delBtn.addEventListener('click', () => {
-    console.log(result);
-    result = result.toString();
-    if (result.length === 1) {
-        result = "";
+function deleteCharacters() {
+    let itemToDelete = textarea.value;
+    if (itemToDelete.length === 1) {
+        itemToDelete = "";
     }
     else {
-        result = result.slice(0, -1);
+        itemToDelete = itemToDelete.slice(0, -1);
     }
-    textarea.textContent = result;
-})
+    textarea.value = itemToDelete;
+    result = parseFloat(itemToDelete);
+}
 
-resetBtn.addEventListener('click', reset);
-
-equalBtn.addEventListener('click', (e) => {
-    console.log(result);
+function equality() {
+    if(realTimeOperator === '') {
+        result = parseFloat(realTimeTerm).toFixed(5);
+        textarea.value = result;
+        counter = 0;
+        return;
+    }
     pressedEqual = true;
     if (counter) {
-        console.log(firstRankOperators.includes(realTimeOperator));
-        if(firstRankOperators.includes(realTimeOperator) && productResult !== '') {
+        if (firstRankOperators.includes(realTimeOperator) && productResult !== '') {
             storeResult = result;
             operation(realTimeTerm, realTimeOperator);
             result = storeResult;
@@ -179,18 +203,9 @@ equalBtn.addEventListener('click', (e) => {
         }
     }
     secondRankOperator = '';
-    textarea.textContent = result;
-
-    console.log(result);
-    // if (realTimeOperator === '+') reverseOperator = '-';
-    // if (realTimeOperator === '-') reverseOperator = '+';
-    // if (realTimeOperator === 'x') reverseOperator = '/';
-    // if (realTimeOperator === '/') reverseOperator = 'x';
-    // operation(realTimeTerm, reverseOperator);
-
+    textarea.value = parseFloat(result).toFixed(5);
     counter = 0;
-})
-
+}
 
 function operation(first, operator) {
     switch (operator) {
@@ -205,12 +220,14 @@ function operation(first, operator) {
         case 'x':
 
             result = result * parseFloat(first);
-            productResult = productResult * parseFloat(first);
+            if (typeof (productResult) !== 'string')
+                productResult = productResult * parseFloat(first);
             break;
         case '/':
 
             result /= parseFloat(first);
-            productResult = productResult / parseFloat(first);
+            if (typeof (productResult) !== 'string')
+                productResult = productResult / parseFloat(first);
             break;
         default:
             break;
@@ -218,7 +235,7 @@ function operation(first, operator) {
 }
 
 function reset() {
-    textarea.textContent = '';
+    textarea.value = '';
     result = 0;
     realTimeTerm = '';
     realTimeOperator = '';
